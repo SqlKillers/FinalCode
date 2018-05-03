@@ -24,7 +24,8 @@ def find_touching(state_arr, touch_arr, color_arr):
         
         #Creates a subset of the colors only from the touching states
         for num in range(current_state,next_state):
-            if num < len(color_arr):                
+            if num < len(color_arr):
+                print(f"SUBSET: State: {state_arr[num]} Touching: {touch_arr[num]} Touching Color: {color_arr[num]}")
                 color_subset.append(color_arr[num])
                 
         
@@ -48,7 +49,7 @@ def find_touching(state_arr, touch_arr, color_arr):
                 pointers.append(current_state)
                 p += 1
             
-        elif state_color == -1:
+        elif state_color == -1:           
             break
             
     #print(f"Pointer: {state_arr[pointers[p]]}")
@@ -88,7 +89,7 @@ Arrays aren't equal lengths!
     
 conn_str = (
     r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
-    r'DBQ=C:\Users\William\Desktop\FourColorMap\States1.accdb;'
+    r'DBQ=H:\Documents\FinalCode\FourColorMap\States1.accdb;'
     )
 cnxn = pyodbc.connect(conn_str)
 cursor = cnxn.cursor()
