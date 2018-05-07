@@ -1,7 +1,10 @@
 import pyodbc
 import os
 #COLOR LIST APPLIES TO TOUCHING STATE LIST! NOT THE STATE LIST!
-
+"""
+TODO: Use current_touching_states to change the colors of every adjacent state to 0,
+    then set all pointers back to 0 and run through the whole list again.
+"""
 def find_touching(state_arr, touch_arr, color_arr):
     previous_state = 0
     current_state = 0
@@ -9,6 +12,8 @@ def find_touching(state_arr, touch_arr, color_arr):
     color_subset = []
     # Pointer array holds the indices of the first occurrence of each state, 0 will always be the first state
     pointers = [0]
+    # A list for error handling
+    current_touching_states = []
     # To increment through each state
     p = 0
 
@@ -27,21 +32,22 @@ def find_touching(state_arr, touch_arr, color_arr):
             if num < len(color_arr):
                 print(f"SUBSET: State: {state_arr[num]} Touching: {touch_arr[num]} Touching Color: {color_arr[num]}")
                 color_subset.append(color_arr[num])
+                current_touching_states.append(touch_arr[num])   
 
 
 
         state_color = get_color(color_subset)
         print(f"State Color: {state_color}")
-        while len(color_subset) > 0:
-            color_subset.pop()
+        
         # If state_color returns -1, the map is invalid and the code needs to backtrack
         if state_color != -1 and next_state != len(state_arr):
 
             # Applies colors to every instance of the current state from touch_arr to color_arr
             for i in range(len(touch_arr)):
-                if state_arr[current_state] == touch_arr[i]:
+                if state_arr[current_state] == touch_arr[i]:       
                     color_arr[i] = state_color
             # Goes to the next state
+            
 
             previous_state = current_state
             current_state = next_state
@@ -50,15 +56,20 @@ def find_touching(state_arr, touch_arr, color_arr):
                 p += 1
 
         elif state_color == -1:
-            # Reset the color array
-            for i in color_arr:
-                color_arr[i] = 0
-            # Set the problem state's color to 1
-            for i in range(len(touch_arr)):
-                if state_arr[current_state] == touch_arr[i]:
-                    color_arr[i] = 1
+            for state in current_touching_states:
+                print(state)
+                
+            print(color_arr)
+            input()
             # break
 
+
+        #Clears color_subset    
+        while len(color_subset) > 0:
+            color_subset.pop()
+        while len(current_touching_states) > 0:
+            current_touching_states.pop()
+        
     # print(f"Pointer: {state_arr[pointers[p]]}")
     for m in range(0, len(state_arr)-1):
         print(f"State: {state_arr[pointers[m]]} Color: {color_arr[pointers[m]]}")
@@ -85,25 +96,24 @@ def get_color(colors):
 def check_lengths(state_arr, touch_arr, color_arr):
     if len(state_arr) != len(touch_arr) or len(state_arr) != len(color_arr):
         print(f"""
-State list: {len(state_arr)}
-Touching State list: {len(touch_arr)}
-Color Array: {len(color_arr)}
-Arrays aren't equal lengths!
-""")
+        State list: {len(state_arr)}
+        Touching State list: {len(touch_arr)}
+        Color Array: {len(color_arr)}
+        Arrays aren't equal lengths!
+        """)
     else:
         print("Lists are equal lengths.")
 
 
 conn_str = (
     r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
-    r'DBQ=H:\Documents\FinalCode\FourColorMap\States1.accdb;'
+    r'DBQ=C:\Users\William\Desktop\finalcode\FourColorMap\States1.accdb;'
     )
 cnxn = pyodbc.connect(conn_str)
 cursor = cnxn.cursor()
 
 """
 SAMPLE LISTS:
-
 # list of states
 state_arr = ["A", "A", "B", "B", "B", "C", "C", "C", "D", "D"]
 # list of states touching those states
@@ -113,6 +123,7 @@ color_arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 # Outputs the colors of the states to final_color_arr for easier output to the form
 final_color_arr = [0, 0, 0, 0]
 """
+
 state_arr = []
 touch_arr = []
 color_arr = []
@@ -123,12 +134,6 @@ for row in cursor:
     state_arr.append(row.Abbreviation)
     touch_arr.append(row.Adjacent)
     color_arr.append(row.Color)
-
-
-
-
-
-
 
 check_lengths(state_arr, touch_arr, color_arr)
 find_touching(state_arr, touch_arr, color_arr)
